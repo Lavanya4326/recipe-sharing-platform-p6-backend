@@ -1,43 +1,48 @@
-const express = require("express");
-const Recipe = require("../models/Recipe");
-const authMiddleware = require("../middleware/authMiddleware");
+const express = require('express');
+const Recipe = require('../models/Recipe');
+const authMiddleware = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
-router.post("/", authMiddleware, async (req, res) => {
-    const { title, description, ingredients, instructions } = req.body;
-    const newRecipe = new Recipe({
-        title,
-        description,
-        ingredients,
-        instructions,
-        user: req.user.id
-    });
-
-    await newRecipe.save();
-    res.status(201).json(newRecipe);
-});
-
-router.get("/", async (req, res) => {
-    const recipes = await Recipe.find().populate("user", "name email");
-    res.json(recipes);
-});
-
-router.get("/:id", async (req, res) => {
-    const recipe = await Recipe.findById(req.params.id).populate("user", "name email");
-    if (!recipe) return res.status(404).json({ message: "Recipe not found" });
-
-    res.json(recipe);
-});
-
-router.delete("/:id", authMiddleware, async (req, res) => {
-    const recipe = await Recipe.findById(req.params.id);
-    if (!recipe || recipe.user.toString() !== req.user.id) {
-        return res.status(403).json({ message: "Not authorized" });
+router.post('/', authMiddleware, async (req, res) => {
+    try {
+        const { title, description, image } = req.body;
+        const newRecipe = await Recipe.create({ title, description, image });
+        res.status(201).json(newRecipe);
+    } catch (error) {
+        res.status(500).json({ message: "Server error" });
     }
+});
 
-    await recipe.deleteOne();
-    res.json({ message: "Recipe deleted" });
+router.get('/', async (req, res) => {
+    try {
+        const recipes = await Recipe.find();
+        res.json(recipes);
+    } catch (error) {
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+router.get('/:id', async (req, res) => {
+    try {
+        const recipe = await Recipe.findById(req.params.id);
+        if (!recipe) return res.status(404).json({ message: "Recipe not found" });
+        res.json(recipe);
+    } catch (error) {
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+router.delete('/:id', authMiddleware, async (req, res) => {
+    try {
+        const recipe = await Recipe.findById(req.params.id);
+        if (!recipe) return res.status(404).json({ message: "Recipe not found" });
+
+        await recipe.deleteOne();
+        res.json({ message: "Recipe deleted" });
+    } catch (error) {
+        res.status(500).json({ message: "Server error" });
+    }
 });
 
 module.exports = router;
