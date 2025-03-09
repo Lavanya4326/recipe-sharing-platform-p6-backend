@@ -3,12 +3,12 @@ const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/db");
 
-const userRoutes = require("./routes/userRoutes");
-const recipeRoutes = require("./routes/recipeRoutes");
-
 const app = express();
 app.use(express.json());
 app.use(cors());
+
+const userRoutes = require("./routes/userRoutes");
+const recipeRoutes = require("./routes/recipeRoutes");
 
 connectDB();
 
