@@ -15,7 +15,7 @@ connectDB();
 app.use("/api/users", userRoutes);
 app.use("/api/recipes", recipeRoutes);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 10000;
 
 app.get("/", (req, res) => {
   res.send("API is running...");
