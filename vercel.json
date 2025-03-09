@@ -13,8 +13,8 @@
     }
   ],
   "functions": {
-    "api/*.js": {
-      "runtime": "edge"
+    "users/**/*.js": {
+      "maxDuration": 30
     }
   }
 }
